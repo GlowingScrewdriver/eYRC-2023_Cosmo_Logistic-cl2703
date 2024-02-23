@@ -94,7 +94,8 @@ if __name__ == "__main__":
     th = threading.Thread (target = executor.spin)
     th.start ()
 
-    node.pick_and_drop ([3, 49])
+    #node.pick_and_drop ([3, 49])
+    node.pick_and_drop ([1])
     node.motion ()
 
     rclpy.shutdown ()

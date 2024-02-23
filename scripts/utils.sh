@@ -35,7 +35,7 @@ magnet_off () { ## Turn off selected magnets
     ebot) ## eBot rack gripper magnet
         service=/usb_relay_sw
         type=usb_relay/srv/RelaySw
-        msg="{relaychannel: 1, relaystate: true}"
+        msg="{relaychannel: 1, relaystate: false}"
         ;;
     esac
 

@@ -14,7 +14,7 @@ from sensor_msgs.msg import Range, Imu
 
 ### Flags for script behaviour ###
 DEBUG = True   # Whether to render the laser scan along with some markers for debugging
-ARENA = False  # Enables switching between simulator and hardware with ease
+ARENA = True  # Enables switching between simulator and hardware with ease
 
 def pos_angle (an):
     """
@@ -197,7 +197,7 @@ class LaserToImg (Node):
             if far[1] > 0: spin = 1
             else:          spin = -1
             ret [1] = spin * 0.3
-            if far[0] < 50: ret [0:2] = [0.0, 0.0] # Endpoint
+            if far[0] < 60: ret [0:2] = [0.0, 0.0] # Endpoint
 
             offset = atan ((c1[0] - c2[0]) / (c2[1] - c1[1])) + pi
             ret [2] = offset # This should already satisfy 0 < offset < 2pi
@@ -228,17 +228,18 @@ class LaserToImg (Node):
         while True:
             diff = pos_angle (self.orientation - start_angle)
             print (start_angle, target_offset, diff)
-            if diff > target_offset:
-              if diff < 3*pi/2: # To guard against an IMU reading of ~2pi initially
+            if diff < target_offset:
+              if diff > pi/2: # To guard against an IMU reading of ~2pi initially
                 vel.angular.z = 0.0
                 self.cmd_vel_pub.publish (vel)
                 break
-            vel.angular.z = 0.5
+            vel.angular.z = 0.4
             self.cmd_vel_pub.publish (vel)
 
+        input ("continue?")
         while True: # Drive to rack
-            #if self.range_left < 18.0:
-            if self.range_left < 0.05:
+            if self.range_left < 18.0:
+            #if self.range_left < 0.05:
                 sleep (2)
                 vel.linear.x = 0.0
                 self.cmd_vel_pub.publish (vel)

@@ -64,6 +64,7 @@ class Move(Node):
                 base_eef_tf = self.tf_buffer.lookup_transform (
                     'base_link', 'wrist_3_link',
                     #'base_link', 'ee_link',
+                    #'base_link', 'ee_link',
                     rclpy.time.Time()
                 )
             except (tf2_ros.LookupException, tf2_ros.ConnectivityException) as e:
@@ -79,7 +80,7 @@ class Move(Node):
             dest_pos = self.dest['position'] - eef_pos
             dist = sum(dest_pos**2)**0.5
 
-            tolerance = 0.12
+            tolerance = 0.02
             if (dist < tolerance): # Endpoint for a servo motion (i.e. a target is reached)
                 # Stop the servo motion and set the callback-pending flag
                 dest_pos *= 0

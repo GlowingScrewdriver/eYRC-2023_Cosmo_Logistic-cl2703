@@ -205,7 +205,7 @@ class RackShift (Node):
         self.navigator.navigate (pickup_pose)
         print ('Reached rack')
         self.rack_grip (pose['rack'], True)
-        input ("Continue?")
+        #input ("Continue?")
 
         # Dock and pick up the rack
         # TODO: Call docking routine from laser_utils
