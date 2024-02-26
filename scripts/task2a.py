@@ -21,7 +21,9 @@ import math, time
 import threading
 from rclpy.callback_groups import ReentrantCallbackGroup
 
-#from linkattacher_msgs.srv import AttachLink, DetachLink
+from cl2703.flags import ARENA
+
+if not ARENA: from linkattacher_msgs.srv import AttachLink, DetachLink
 
 class PickAndDrop (Move):
     def __init__(self, name):

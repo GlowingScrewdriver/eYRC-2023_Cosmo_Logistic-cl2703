@@ -12,9 +12,8 @@ from std_msgs.msg import Float32MultiArray, Float32
 from scipy.spatial.transform import Rotation as R
 from sensor_msgs.msg import Range, Imu
 
-### Flags for script behaviour ###
-DEBUG = True   # Whether to render the laser scan along with some markers for debugging
-ARENA = True  # Enables switching between simulator and hardware with ease
+# Behaviour flags
+from cl2703.flags import ARENA, DEBUG
 
 def pos_angle (an):
     """
@@ -225,21 +224,24 @@ class LaserToImg (Node):
 
         start_angle = self.orientation # Track the angle difference from start_angle
         target_offset = v [2]          # Aim to reach angle start_angle + target_offset
+        if ARENA: spin_speed = -0.4    # In the arena, IMU reading grows in the opposite direction
+        else:     spin_speed =  0.4
         while True:
             diff = pos_angle (self.orientation - start_angle)
             print (start_angle, target_offset, diff)
-            if diff < target_offset:
-              if diff > pi/2: # To guard against an IMU reading of ~2pi initially
+            if diff > target_offset:
+              if diff < 3*pi/2: # To guard against an IMU reading of ~2pi initially
                 vel.angular.z = 0.0
                 self.cmd_vel_pub.publish (vel)
                 break
-            vel.angular.z = 0.4
+            vel.angular.z = spin_speed
             self.cmd_vel_pub.publish (vel)
 
         input ("continue?")
+        if ARENA: min_range = 18.0
+        else:     min_range = 0.05
         while True: # Drive to rack
-            if self.range_left < 18.0:
-            #if self.range_left < 0.05:
+            if self.range_left < min_range:
                 sleep (2)
                 vel.linear.x = 0.0
                 self.cmd_vel_pub.publish (vel)

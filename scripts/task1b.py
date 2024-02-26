@@ -19,6 +19,8 @@ from geometry_msgs.msg import TwistStamped
 from pymoveit2 import MoveIt2
 from pymoveit2.robots import ur5
 
+from cl2703.flags import ARENA, DEBUG
+
 class Move(Node):
     def motion(self):
         """
@@ -30,6 +32,8 @@ class Move(Node):
         """
 
         CbPending = False # This flag determines when the destination callback is called
+        if ARENA: Tolerance = 0.02 # Determines endpoint for servo motion
+        else:     Tolerance = 0.12
         while True:
             # If target is reached
             if CbPending:
@@ -80,13 +84,12 @@ class Move(Node):
             dest_pos = self.dest['position'] - eef_pos
             dist = sum(dest_pos**2)**0.5
 
-            tolerance = 0.02
-            if (dist < tolerance): # Endpoint for a servo motion (i.e. a target is reached)
+            if (dist < Tolerance): # Endpoint for a servo motion (i.e. a target is reached)
                 # Stop the servo motion and set the callback-pending flag
                 dest_pos *= 0
                 print ('Reached destination')
                 CbPending = True
-            if dist < tolerance * 1.5: vel = 0.2
+            if dist < Tolerance * 1.5: vel = 0.2
             else: vel = 0.5
             dest_vel = (dest_pos / dist) * vel # Servo motion at `vel` metres/second
 
