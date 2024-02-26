@@ -13,7 +13,7 @@ from scipy.spatial.transform import Rotation as R
 from sensor_msgs.msg import Range, Imu
 
 # Behaviour flags
-from cl2703.flags import ARENA, DEBUG
+from cl2703.flags import ARENA, DEBUG_LASER as DEBUG
 
 def pos_angle (an):
     """
@@ -109,6 +109,7 @@ class LaserToImg (Node):
 
         # Identify rack from the contours
         rack_len = array ([40, 80, 40]) # Pixels
+        if not ARENA: rack_len [1] = 75
         for sh in shapes_fil:
             LenDiffMax = 15 # cm
             # Each shape here is tested as a candidate to be the rack.
@@ -213,14 +214,16 @@ class LaserToImg (Node):
         return ret
             
     def dock (self, orientation):
+        print ("Docking...")
         vel = Twist ()
         while True: # Get to the center of rack
             v = self.dock_advice ()
             vel.linear.x, vel.angular.z = v [0:2]
             self.cmd_vel_pub.publish (vel)
             if not v[0]: break # Docking is complete
-            cv2.imshow ("Rack view", self.im_color)
-            cv2.waitKey (1)
+            if DEBUG:
+                cv2.imshow ("Rack view", self.im_color)
+                cv2.waitKey (1)
 
         start_angle = self.orientation # Track the angle difference from start_angle
         target_offset = v [2]          # Aim to reach angle start_angle + target_offset
@@ -228,7 +231,6 @@ class LaserToImg (Node):
         else:     spin_speed =  0.4
         while True:
             diff = pos_angle (self.orientation - start_angle)
-            print (start_angle, target_offset, diff)
             if diff > target_offset:
               if diff < 3*pi/2: # To guard against an IMU reading of ~2pi initially
                 vel.angular.z = 0.0
@@ -237,7 +239,7 @@ class LaserToImg (Node):
             vel.angular.z = spin_speed
             self.cmd_vel_pub.publish (vel)
 
-        input ("continue?")
+        #input ("continue?")
         if ARENA: min_range = 18.0
         else:     min_range = 0.05
         while True: # Drive to rack

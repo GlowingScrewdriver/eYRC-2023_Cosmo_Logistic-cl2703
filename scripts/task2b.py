@@ -13,7 +13,6 @@
 from cl2703.task1c import Navigator
 from geometry_msgs.msg import PoseStamped, Twist, Polygon, Point32, PoseWithCovarianceStamped
 from nav_msgs.msg import Odometry
-#from linkattacher_msgs.srv import AttachLink, DetachLink
 import rclpy
 from rclpy.callback_groups import ReentrantCallbackGroup
 from rclpy.node import Node
@@ -21,6 +20,8 @@ from math import sin, cos, acos, pi
 import time, threading, numpy as np
 from scipy.spatial.transform import Rotation as R
 
+from cl2703.flags import ARENA
+if not ARENA: from linkattacher_msgs.srv import AttachLink, DetachLink
 
 def pretty_print_pose (pose):
     '''
@@ -60,6 +61,13 @@ class RackShift (Node):
         Node.__init__(self, 'rackshift')
 
         self.callback_group = ReentrantCallbackGroup ()
+
+        if not ARENA:
+            self.attach_cli = self.create_client (AttachLink, '/ATTACH_LINK', callback_group=self.callback_group)
+            self.attach_req = AttachLink.Request (model1_name='ebot', link1_name='ebot_base_link', link2_name='link')
+            self.detach_cli = self.create_client (DetachLink, '/DETACH_LINK', callback_group=self.callback_group)
+            self.detach_req = DetachLink.Request (model1_name='ebot', link1_name='ebot_base_link', link2_name='link')
+
         # Velocity commands and odometry
         self.vel_pub    = self.create_publisher (Twist, '/cmd_vel', 10)
         self.robot_pose = None
@@ -159,7 +167,7 @@ class RackShift (Node):
 
             # Driving to the goal
             elif not Reached:
-                if sum(pos_diff**2) > 0.1**2:
+                if sum(pos_diff**2) > 0.2**2:
                     self.spin (trans = 0.3)
                 else:
                     self.spin ()
@@ -170,7 +178,7 @@ class RackShift (Node):
                 goal_angle = drop_pose['rot']
                 rot = 0.7
                 angle_diff = normalize_angle(goal_angle - cur_angle)
-                if abs(angle_diff) < 0.05:
+                if abs(angle_diff) < 0.1:
                     rot = 0.0
                     Done = True
                 if angle_diff < 0: rot *= -1
@@ -204,13 +212,14 @@ class RackShift (Node):
 
         self.navigator.navigate (pickup_pose)
         print ('Reached rack')
-        self.rack_grip (pose['rack'], True)
+        if ARENA: self.rack_grip (pose['rack'], True)
         #input ("Continue?")
 
         # Dock and pick up the rack
         # TODO: Call docking routine from laser_utils
         #self.laserdocker.dock (pose['rot'])
         laserdocker.dock (pickup_pose['rot'])
+        if not ARENA: self.rack_grip (pose['rack'], True)
         print ('Attached rack')
 
         # Update the footprint to include the edge of the rack
