@@ -8,7 +8,8 @@ from laser_utils import LaserToImg
 from task1a import aruco_tf
 
 from cl2703.flags import ARENA
-if ARENA:
+#if ARENA:
+if True:
     from cl2703.task4a import RackShiftHW as RackShift
     from cl2703.task4b import PickAndDrop as PickAndDrop
 else:

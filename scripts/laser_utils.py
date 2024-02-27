@@ -222,17 +222,20 @@ class LaserToImg (Node):
             self.cmd_vel_pub.publish (vel)
             if not v[0]: break # Docking is complete
             if DEBUG:
-                cv2.imshow ("Rack view", self.im_color)
-                cv2.waitKey (1)
+                pass
+                #cv2.imshow ("Rack view", self.im_color)
+                #cv2.waitKey (1)
 
         start_angle = self.orientation # Track the angle difference from start_angle
         target_offset = v [2]          # Aim to reach angle start_angle + target_offset
-        if ARENA: spin_speed = -0.4    # In the arena, IMU reading grows in the opposite direction
-        else:     spin_speed =  0.4
+        #if ARENA: spin_speed = -0.4    # In the arena, IMU reading grows in the opposite direction
+       # else:     spin_speed =  0.4
+        spin_speed = 0.3
         while True:
             diff = pos_angle (self.orientation - start_angle)
-            if diff > target_offset:
-              if diff < 3*pi/2: # To guard against an IMU reading of ~2pi initially
+            print (diff, target_offset)
+            if diff < target_offset:
+              if diff > pi/2: # To guard against an IMU reading of ~2pi initially
                 vel.angular.z = 0.0
                 self.cmd_vel_pub.publish (vel)
                 break

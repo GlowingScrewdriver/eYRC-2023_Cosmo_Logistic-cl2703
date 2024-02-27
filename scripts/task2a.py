@@ -39,7 +39,7 @@ class PickAndDrop (Move):
             self.client1 = self.create_client(AttachLink, '/GripperMagnetON', callback_group=callback_group)
             self.client2 = self.create_client(DetachLink, '/GripperMagnetOFF', callback_group=callback_group)
 
-        self.box_y = -0.25 # This is the y-coordinate of the current box
+        self.box_y = -0.20 # This is the y-coordinate of the current box
         self.box_width = 0.3 # This is added to box_y every time a box is dropped
 
         self.destinations = []

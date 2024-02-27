@@ -206,7 +206,7 @@ class RackShift (Node):
         away = np.array ([cos(pose['pickup']['rot']), sin(pose['pickup']['rot'])])
         pickup_pose = pose['pickup'].copy ()
         # Put the ebot some distance in front of the rack.
-        pickup_pose['trans'] = 1.5*away + pose['pickup']['trans']
+        pickup_pose['trans'] = 2.0*away + pose['pickup']['trans']
         # Laser scanner should face the rack
         pickup_pose['rot'] = normalize_angle (pickup_pose['rot'] + pi)
 

@@ -188,8 +188,8 @@ def detect_aruco(image):
         cv2.putText (image, "center", (center_aruco_list[n][0] - 10, center_aruco_list[n][1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2)
     cv2.aruco.drawDetectedMarkers (image, corners, ids)
 
-    cv2.imshow ('Aruco Detector', image)
-    cv2.waitKey (1)
+    #cv2.imshow ('Aruco Detector', image)
+    #cv2.waitKey (1)
 
     return center_aruco_list, distance_from_rgb_list, angle_aruco_list, width_aruco_list, ids_fil
 
