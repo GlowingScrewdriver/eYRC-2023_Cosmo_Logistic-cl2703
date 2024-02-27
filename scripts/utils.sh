@@ -1,7 +1,8 @@
 #!/bin/sh
 
 ### A wrapper for some common tasks in the Hardware Arena ###
-### Usage: utils.sh <task> <args> 
+### Usage: utils.sh <task> <args>
+### Run without arguments to see usage
 
 ebot_move () { ## Control motion of the ebot
     case "$1" in
@@ -40,6 +41,16 @@ magnet_off () { ## Turn off selected magnets
     esac
 
     ros2 service call "$service" "$type" "$msg"
+}
+
+start_run () { ## Get everything ready for the start of a run
+    for srv in /servo_node/start_servo /reset_imu /reset_odom; do
+        ros2 service call $srv std_srvs/srv/Trigger
+    done
+
+    for mag in arm ebot; do
+        magnet_off $mag
+    done
 }
 
 usage () {
