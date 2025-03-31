@@ -21,7 +21,7 @@ and installed using colcon.
 * Turn off all magnets, start MoveIt servo and reset odometry and IMU:
   `$ ros2 run cl2703 utils.sh start_run`
 
-* Place `config.yaml` in your current working directory
+* Place `config.yaml` in your current working directory.
 
 * Run the task script:
   `$ ros2 run cl2703 task.py`
